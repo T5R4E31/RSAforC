@@ -24,11 +24,10 @@ typedef struct {
 //get a prime number, iterative
 int getPrime(){
   int n = rand()%MAX_INT;
-  loop1:;
   for (int i = 2; i*i<MAX_INT; i++){
     if (!(n%i)){
       n = rand()%MAX_INT;
-      goto loop1;
+      i = 1;
     }
   }
   return n;
@@ -37,7 +36,7 @@ int getPrime(){
 //check if two int are coprimes
 int checkCoprime(int n, int m){
   for (int i = 2; i<(n < m ? n: m); i++){
-    if (n%i == 0 && m%i == 0){
+    if (!(n%i|m%i)){
       return 0;
     }
   }
@@ -81,12 +80,10 @@ int modInverse(int A, int M){
 long long int modPow(long long int a, long long exp, long long int m){
   if (a==0) return 0;
   if (exp==0) return 1;
-  if (exp%2 == 0){
-    return (modPow(a, exp/2, m)*modPow(a, exp/2, m))%m;
-  }
-  else{
+  if (exp%2)
     return ((a%m)*modPow(a, exp-1, m))%m;
-  }
+  return (modPow(a, exp >> 1, m)*modPow(a, exp >> 1, m))%m;
+
 }
 
 //encrypt function
@@ -103,7 +100,7 @@ long long int decrypt(long long int a, private_key pvk, public_key pbk){
 long long int * encryptString(char * str, public_key pbk){
   long long int * str_encr = malloc(sizeof(long long int)*1000);
   int i = 0;
-  while(str[i]!='\0'){
+  while (str[i]!='\0'){
     str_encr[i] = encrypt(str[i], pbk);
     i++;
   }
@@ -117,7 +114,7 @@ char * decryptString(long long int * str, private_key pvk, public_key pbk){
   do{
     str_decr[i] = decrypt(str[i], pvk, pbk);
     i++;
-  } while (str_decr[i]=='\0' && i<1000);
+  } while (str_decr[i-1]!='\0');
   return str_decr;
 }
 
@@ -138,13 +135,8 @@ all_keys generateKeys(){
   long long int inv = modInverse(exp, indic_chiff_mod);
  
   //init all keys
-  private_key pvk;
-  pvk.private_key = inv;
-  public_key pbk;
-  pbk.mod_chiff = chiff_mod;
-  pbk.exp = exp;
-  all_keys res;
-  res.pvk = pvk;
-  res.pbk = pbk;
+  private_key pvk = {inv};
+  public_key pbk = {chiff_mod, exp};
+  all_keys res = {pvk, pbk};
   return res;
 }
