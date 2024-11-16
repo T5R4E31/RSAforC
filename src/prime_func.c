@@ -2,26 +2,12 @@
 #include <stdio.h>
 #include <time.h>
 #include <math.h>
+#include "../include/prime_func.h"
 
 //max value of primes
 // /!\ slows down the program if upped
 #define MAX_INT 10
 #define PI 3.14159265358979323846264338327950288419716939937510582097494459230781640628620899862803482
-
-//define private and public key struct
-typedef struct {
-  long long int private_key;
-} private_key;
-
-typedef struct {
-  long long int mod_chiff;
-  long long int exp;
-} public_key;
-
-typedef struct {
-  private_key pvk;
-  public_key pbk;
-} all_keys;
 
 int factRec(int n, int * tab){
   if (n==0) return 1;
@@ -76,7 +62,7 @@ int getCoprime(int n){
 }
 
 //get the inverse of A mod M
-int modInverse(int A, int M){
+long long int modInverse(long long int A, long long int M){
     long long int m0 = M;
     long long int y = 0;
     long long int x = 1;
