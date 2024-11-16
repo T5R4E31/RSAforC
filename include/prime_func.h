@@ -15,7 +15,8 @@ typedef struct {
   public_key pbk;
 } all_keys;
 
-
+int factInterface(int n);
+int factRec(int n, int * tab);
 int getPrime();
 long long int checkCoprime(int n, int m);
 int getCoprime(int n);

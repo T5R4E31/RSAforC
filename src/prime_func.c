@@ -1,10 +1,12 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
+#include <math.h>
 
 //max value of primes
 // /!\ slows down the program if upped
-#define MAX_INT 1000
+#define MAX_INT 10
+#define PI 3.14159265358979323846264338327950288419716939937510582097494459230781640628620899862803482
 
 //define private and public key struct
 typedef struct {
@@ -21,16 +23,37 @@ typedef struct {
   public_key pbk;
 } all_keys;
 
+int factRec(int n, int * tab){
+  if (n==0) return 1;
+  if (n==1) return 1;
+  if (tab[n]!=0) return tab[n];
+  tab[n] = n*factRec(n-1, tab);
+  return tab[n];
+}
+
+int factInterface(int n){
+  int * tab = calloc(n, sizeof(int));
+  int res = factRec(n, tab);
+  free(tab);
+  return res;
+}
+
 //get a prime number, iterative
 int getPrime(){
-  int n = rand()%MAX_INT;
-  for (int i = 2; i*i<MAX_INT; i++){
-    if (!(n%i)){
-      n = rand()%MAX_INT;
-      i = 1;
+  srand(time(NULL));
+  int in_sum = 0;
+  int res = 1;
+  int rand_num = rand()%MAX_INT;
+  for (int i = 1; i<pow(2, rand_num); i++){
+    for (int j = 1; j<i; j++){
+      in_sum+= (int)pow((cos(PI*((factInterface(j-1)+1)/(float)j))), 2);
     }
+    printf("%d ", in_sum);
+    res += pow((float)rand_num/in_sum, 1.0/rand_num);
+    in_sum = 0;
   }
-  return n;
+  printf("\n");
+  return res;
 }
 
 //check if two int are coprimes
@@ -83,7 +106,6 @@ long long int modPow(long long int a, long long exp, long long int m){
   if (exp%2)
     return ((a%m)*modPow(a, exp-1, m))%m;
   return (modPow(a, exp >> 1, m)*modPow(a, exp >> 1, m))%m;
-
 }
 
 //encrypt function
